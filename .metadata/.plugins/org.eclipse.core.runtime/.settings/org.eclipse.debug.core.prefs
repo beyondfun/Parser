@@ -1,0 +1,4 @@
+#Wed Mar 24 16:42:05 CST 2010
+prefWatchExpressions=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<watchExpressions>\n<expression enabled\="true" text\="strResult.c_str()"/>\n<expression enabled\="true" text\="iPos"/>\n<expression enabled\="true" text\="strContent.c_str()"/>\n<expression enabled\="true" text\="puts(strResult.c_str())"/>\n</watchExpressions>\n
+eclipse.preferences.version=1
+org.eclipse.debug.core.USE_STEP_FILTERS=true

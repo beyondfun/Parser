@@ -1,0 +1,127 @@
+In file included from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/lock.h:4,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/node.h:8,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/html_parser.h:7,
+                 from ../Parser.cpp:15:
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:34:22: warning: tr1/memory: No such file or directory
+In file included from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/lock.h:4,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/node.h:8,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/html_parser.h:7,
+                 from ../Parser.cpp:15:
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:112: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:112: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:112: error: `shared_ptr' declared as a `virtual' field
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:112: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:118: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:118: error: `shared_ptr' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:118: error: expected `,' or `...' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:118: error: ISO C++ forbids declaration of `parameter' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:120: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:120: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:120: error: `shared_ptr' declared as a `virtual' field
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:120: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:142: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:142: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:142: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:162: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:162: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:162: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:168: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:168: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:168: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:174: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:174: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:174: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:180: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:180: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:180: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:186: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:186: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:186: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:193: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:193: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:193: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:200: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:200: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:200: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:207: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:207: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:207: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:214: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:214: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:214: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:221: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:221: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:221: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:227: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:227: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:227: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:233: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:233: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:233: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:239: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:239: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:239: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:246: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:246: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:246: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:253: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:253: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:253: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:260: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:260: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:260: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:267: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:267: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:267: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:274: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:274: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:274: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:281: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:281: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:281: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:288: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:288: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:288: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:295: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:295: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:295: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:302: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:302: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:302: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:309: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:309: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:309: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:316: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:316: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:316: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:324: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:324: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:324: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:325: error: expected `;' before '}' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:332: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:332: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:332: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:333: error: expected `;' before '}' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:340: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:340: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:340: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:341: error: expected `;' before '}' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:350: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:350: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:350: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:351: error: expected `;' before '}' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:356: error: `std::tr1' has not been declared
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:356: error: ISO C++ forbids declaration of `shared_ptr' with no type
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:356: error: expected `;' before '<' token
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/exception.h:357: error: expected `;' before '}' token
+In file included from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/string_tools.h:28,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/lock.h:5,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/node.h:8,
+                 from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/html_parser.h:7,
+                 from ../Parser.cpp:15:
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/astream.h: In member function `virtual int32_t apsara::a_IstreamLengthed::read(char*, int32_t)':
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/apsara/common/astream.h:591: warning: comparison between signed and unsigned integer expressions
+In file included from /home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/html_parser.h:8,
+                 from ../Parser.cpp:15:
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/feature.h: In function `bool galaxy::utility::htmlparser::IsHtmlFeatureNonTermDelimiter(char)':
+/home/lehou/source/daogou/spider/extractor/trunk/src/parser/include/feature.h:36: warning: array subscript has type `char'

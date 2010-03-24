@@ -1,0 +1,1495 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1"><meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+    <script type="text/javascript" language="javascript">
+	var _sn=["df/common","df/review"];var _su="http://www.360buy.com/skin/";var Swidth=screen.width;var _se,_st;for (i in _sn){_se=document.createElement("link");_se.type="text/css";_se.rel="stylesheet";if (Swidth>=1280){_st=_su+_sn[i]+".w.css";}else{_st=_su+_sn[i]+".css";}_se.href=_st;document.getElementsByTagName("head")[0].appendChild(_se);}
+    </script>
+
+    <noscript>
+        <link type="text/css" rel="stylesheet" href="http://www.360buy.com/skin/df/common.css" /><link type="text/css" rel="stylesheet" href="http://www.360buy.com/skin/df/review.css" />
+    </noscript>
+    <link type="text/css" rel="stylesheet" href="http://www.360buy.com/skin/jquery.validate.1.4.0.css" />
+
+    <script type="text/javascript" src="http://www.360buy.com/script/jquery-1.2.6.pack.js"></script>
+
+    <script type="text/javascript" src="http://www.360buy.com/script/effects-20090707.js"></script>
+
+    <script defer="defer" type="text/javascript">
+	$(
+		function()
+		{
+			refreshNavigation();
+			
+			$("#form1").validate(
+				{
+					rules:
+					{
+						point:
+							{
+								required: true
+							},
+						r1:
+							{
+								required: true
+							},
+						title:
+							{
+								required: true,
+								rangelength: [4, 20],
+								specialWord: true,
+								badWord: true
+							},
+						pros:
+							{
+								required: true,
+								rangelength: [5, 200],
+								specialWord: true
+							},
+						cons:
+							{
+								required: true,
+								rangelength: [5, 100],
+								specialWord: true
+							},
+						content:
+							{
+								required: true,
+								rangelength: [5, 200],
+								specialWord: true
+							}
+					},
+					messages:
+					{
+						title:
+							{
+								required: "必填，长度在4-20个字之间",
+								rangelength: "必填，长度在4-20个字之间",
+								specialWord: "标题含有特殊字符"
+							},
+						pros:
+							{
+								required: "必填，长度在5-200个字之间",
+								rangelength: "必填，长度在5-200个字之间",
+								specialWord: "优点含有特殊字符"
+							},
+						cons:
+							{
+								required: "必填，长度在5-100个字之间",
+								rangelength: "必填，长度在5-100个字之间",
+								specialWord: "不足含有特殊字符"
+							},
+						content:
+							{
+								required: "必填，长度在5-200个字之间",
+								rangelength: "必填，长度在5-200个字之间",
+								specialWord: "总结含有特殊字符"
+							}
+					}
+				});
+			
+			$(":input[name=agree][enabled!=true], :input[name=oppose][enabled!=true]").click(
+				function()
+				{
+					var current = $(this);
+					$.login(
+						{
+							complete:
+								function(result)
+								{
+									if (result.IsAuthenticated)
+									{
+										var commentId = $(current).parent().attr("id");
+										var isUseful = $(current).attr("name") == "agree";
+										$.getJSON(
+											"http://club.360buy.com/clubservice.aspx?callback=?",
+											{
+												method: "VoteForComment",
+												commentId: commentId,
+												isUseful: isUseful
+											},
+											function(result)
+											{
+												$(current).attr("enabled", "true");
+												if (result.Result)
+												{
+													var count = parseInt($(current).attr("title")) + 1;
+													$(current).attr("title", count);
+													if (isUseful)
+													{
+														$(current).val("有用({0})".format(count));
+													}
+													else
+													{
+														$(current).val("没用({0})".format(count));
+													}
+												}
+											});
+									}
+								}
+						});
+				});
+			
+			$(":input[name=point]").each(
+				function()
+				{
+					$(this).attr("checked", false);
+				});
+			
+			$(":input[name=point]").click(
+				function()
+				{
+					if ($(this).val() == 1)
+					{
+						$("#researchBox").show();
+						$(":input[name=r1]").each(
+							function()
+							{
+								$(this).attr("checked", false);
+							});
+					}
+					else
+					{
+						$("#researchBox").hide();
+						$(":input[name=r1][value=s1]").attr("checked", true);
+						$("#review li:gt(1)").show();
+						$("#review .Re_Explain").show();
+					}
+				});
+			
+			$(":input[name=r1]").click(
+				function()
+				{
+					if ($(this).val() == "s1")
+					{
+						$("#text1").show();
+						$("#text2").hide();
+						$("#review li:gt(1)").show();
+						$("#review .Re_Explain").show();
+					}
+					else
+					{
+						$("#text1").hide();
+						$("#text2").show();
+						$("#review li:gt(1)").hide();
+						$("#review .Re_Explain").hide();
+					}
+				});
+			
+			$("#title, #pros, #cons, #content").click(
+				function()
+				{
+					var current = $(this);
+					$.getJSON(
+						"http://passport.360buy.com/loginservice.aspx?callback=?",
+						{
+							method: "Login"
+						},
+						function(result)
+						{
+							if (!result.Identity.IsAuthenticated && confirm("尚未登录，不能发表评价，现在登录？"))
+							{
+								$.login();
+							}
+							else if ($(current).attr("id") == "cons")
+							{
+								if ($(current).val() == "暂时还没发现缺点哦！")
+								{
+									$(current).val("");
+								}
+							}
+						});
+				});
+			
+			$("#saveComment").click(
+				function()
+				{
+					$.login(
+						{
+							complete:
+								function(result)
+								{
+									if (result.IsAuthenticated)
+									{
+										var referenceId = $.query.get("id");
+										if (referenceId == "")
+										{
+											var result = location.href.match(/(\d*)-(\d*)-(.*)\.html/);
+											if (result != null)
+											{
+												referenceId = result[1];
+											}
+										}
+										var referenceType = "Product";
+										var score = $(":radio[name=point]:checked").val();
+										var title = $.trim($("#title").val());
+										var pros = $.trim($("#pros").val());
+										var cons = $.trim($("#cons").val());
+										var content = $.trim($("#content").val());
+										if (referenceId != "")
+										{
+											$("#form1").validate();
+											if ($("#form1").valid())
+											{		
+												$.jmsajax(
+													{
+														url: "http://club.360buy.com/clubwebservice.asmx",
+														method: "SaveProductComment",
+														data:
+														{
+															referenceId: referenceId,
+															referenceType: referenceType,														
+															score: score,	
+															referenceTime:"",														
+															title: title,
+															pros: pros,
+															cons: cons,
+															content: content
+														},
+														success: function(result)
+														{
+															if (result.Status == -1)
+															{
+																 alert("您发表的内容里含有国家规定的敏感词，按照相关部门要求，您的内容不能被显示，感谢您的理解和支持！");
+																 $("#title").val("");
+																 $("#pros").val("");
+																 $("#cons").val("");
+																 $("#content").val("");	
+															}
+															else if (result.Status == -2)
+															{
+																 alert("抱歉，您可能没有购买过该商品 或 购买的时间超过半年 或 已评价过该商品，暂不能发表商品评价！");
+															}
+															else if (result.Status == 1)
+															{
+																$(".right .PR_list:last").after(result.Content);
+																$("#title").val("");
+																$("#pros").val("");
+																$("#cons").val("");
+																$("#content").val("");
+																alert("评价发表成功，感谢您的分享！");
+															}
+															else if (result.Status == 0)
+															{
+																alert("抱歉，可能由于网络原因提交失败，请重试！");
+															}															
+														}
+													});
+											}
+										}
+									}
+								}
+						});
+				});
+			
+			$("#pros").twitterCounter(
+				{
+					limit: 200,
+					counter: "#prosCounter",
+					okSize: 200,
+					okStyle: ".ok",
+					watchSize: 0,
+					watchStyle: ".watch",
+					warningSize: 195,
+					warningStyle: ".warning",
+					errorSize: 0,
+					errorStyle: ".error"
+				});
+			
+			$("#cons").twitterCounter(
+				{
+					limit: 100,
+					counter: "#consCounter",
+					okSize: 100,
+					okStyle: ".ok",
+					watchSize: 0,
+					watchStyle: ".watch",
+					warningSize: 95,
+					warningStyle: ".warning",
+					errorSize: 0,
+					errorStyle: ".error"
+				});
+			
+			$("#content").twitterCounter(
+				{
+					limit: 200,
+					counter: "#contentCounter",
+					okSize: 200,
+					okStyle: ".ok",
+					watchSize: 0,
+					watchStyle: ".watch",
+					warningSize: 195,
+					warningStyle: ".warning",
+					errorSize: 0,
+					errorStyle: ".error"
+				});
+		});
+	
+	function refreshNavigation()
+	{
+		var referenceId = $.query.get("id");
+		if (referenceId == "")
+		{
+			var result = location.href.match(/(\d*)-(\d*)-(.*)\.html/);
+			if (result != null)
+			{
+				referenceId = result[1];
+			}
+		}
+		var productId = parseInt(referenceId);
+		if (productId > 0)
+		{
+			$.ajax(
+				{
+					url: "http://www.360buy.com/catalogservice.aspx",
+					dataType: "jsonp",
+					jsonp: "getNavigation",
+					data:
+						{
+							callback: "getNavigation",
+							method: "GetNavigation",
+							productId: productId
+						},
+					cache: true
+				});
+		}
+	}
+	
+	function getNavigation(result)
+	{
+		if (result.Navigation != null)
+		{
+			$("#PositionContainer").html(result.Navigation);
+			$("#Position").append("&nbsp;>&nbsp;<a>商品评价</a>");
+		}
+	}
+    </script>
+
+    <title>
+	诺基亚（Nokia）N73 GSM手机(黑色) 非移动定制机 评论 怎么样 心得 体会 经验
+</title><meta name="description" content='这里有网友对诺基亚（Nokia）N73 GSM手机(黑色) 非移动定制机的评价。360BUY京东商城(360BUY.COM)提供诺基亚N73最新价格，同时包括诺基亚 N73图片、N73参数、N73评论、N73咨询等信息，为您购买诺基亚N73提供最有价值的参考' /><meta name="keywords" content="N73,Nokia N73,诺基亚 N73,诺基亚N73评论,NokiaN73评论" /></head>
+<body>
+    <form name="form1" method="post" action="review.aspx?id=109857&amp;type=1&amp;page=2&amp;score=0" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTUwNDg2MzcxOGRkhEBO8Hwsy7CP+oiamzTUAwAAAAA=" />
+
+
+        <script type="text/javascript">
+function showSearchTip(obj,Tobj,action){
+	if (action=="open"){
+		$(Tobj).css({display:"block"});
+	}else{
+		$(Tobj).css({display:"none"});
+	}
+	$(".Se_tip_item").mouseover(function(){
+		$(this).css({background:"#efefef"});
+		$("#seacid").get(0).value=$(this).children("span").text();
+	}).mouseout(function(){
+		$(this).css({background:"#ffffff"});
+	})
+}
+        </script>
+
+        <script  type="text/javascript">
+function search(id){
+    var selKey=document.getElementById(id).value;
+    window.location='http://search.360buy.com/Search?keyword='+selKey;
+}
+function login(){
+    location.href="http://passport.360buy.com/login.aspx?ReturnUrl="+escape(location.href);
+    return false;
+}
+function setWebBILinkCount(sType)
+{
+   try{
+	      if(sType.length>0)
+		  {
+            var js=document.createElement('script');
+            js.type='text/javascript';
+            js.src='http://counter.360buy.com/aclk.aspx?key='+sType;
+            //js.charset='UTF-8';
+            document.getElementsByTagName('head')[0].appendChild(js);
+		  }
+   }catch(e){}
+}
+</script>
+<!--[if !ie]>顶部内容开始<![endif]-->
+<div class="Header">
+    <div id="Logo"><a href="http://www.360buy.com/"><img src="http://misc.360buyimg.com/skin/df/i/com/logo.gif" alt="京东商城" width="167" height="46" /></a></div>
+    <!--[if !ie]>logo end<![endif]-->
+    <div class="head_box1">
+
+        <div id="Tip"><span id="vtip1">您好，欢迎来到京东商城！<span>想继续购物？<a  href="javascript:login();">[请登录]</a>，新用户？<a href="javascript:login();">[免费注册]</a></span></span></div>
+        <!--[if !ie]>tip end<![endif]-->
+        <div id="MiniToolBar">
+            <ul>
+                <li id="My360buy"><a onClick="setWebBILinkCount('index_top_jd2008')" href="http://jd2008.360buy.com/user_home.aspx">我的京东</a></li>
+                <li class="line">|</li>
+                <li><a target="_blank" onClick="setWebBILinkCount('index_top_zhuangji')" href="http://diy.360buy.com/">装机大师</a></li>
+                <li class="line">|</li>
+                <li class="lpk"><a target="_blank" href="http://market.360buy.com/giftcard/">礼品卡</a></li>
+                <li class="line">|</li>
+				<li><a target="_blank" href="http://market.360buy.com/giftcard/company/default.aspx">企业客户</a></li>
+                <li class="line line-1">|</li>
+                <li class="hsub">
+                    <dl id="ServiceCenter"><dt><a target="_blank"  href="http://www.360buy.com/help/callcenter.aspx">客服中心</a></dt><dd><a href="http://jd2008.360buy.com/user_order.aspx">订单中心</a></dd><dd><a target="_blank"  href="http://jd2008.360buy.com/user_cpfx.aspx">返修中心</a></dd><dd><a href="http://jd2008.360buy.com/complaint.aspx">投诉中心</a></dd></dl>
+                </li>
+            </ul>
+        </div>
+        <!--[if !ie]>MiniToolBar end<![endif]-->
+        <div class="clear"></div>
+        <ul id="Nav">
+            <li  class="curr"><span class="Nav_first"><a href="http://www.360buy.com/"   onFocus="this.blur()">首 页</a></span></li>
+            <li ><span><a href="http://www.360buy.com/electronic.html"  onFocus="this.blur()">家用电器</a></span></li>
+
+            <li ><span><a href="http://www.360buy.com/digital.html"  onFocus="this.blur()">手机数码</a></span></li>
+            <li ><span><a href="http://www.360buy.com/computer.html"  onFocus="this.blur()">电脑产品</a></span></li>
+            <li ><span><a href="http://www.360buy.com/jdlife.html"  onFocus="this.blur()">日用百货</a></span></li>
+            <li id="exchange"><a href="http://market.360buy.com/jifen/" onfocus="this.blur()">积分兑换</a></li>
+        </ul>
+        <!--[if !ie]>Nav end<![endif]-->
+    </div>
+    <div class="clear"></div>
+
+    <div class="head_box2">
+        <div class="head_box2_left"></div>
+        <div class="head_box2_right"></div>
+      <div id="HotKeyword"></div>
+        <ul id="Search">
+            <li><strong>商品搜索：</strong></li>
+            <li class="S_input">
+              <input type="text"  value="ThinkPad X200" onClick="this.value='';this.style.color='#444444'" autocomplete="off" class="S_input1" id="keyword" onKeyDown="javascript:if(event.keyCode==13) search('keyword');" />
+                <div id="Se_tip"></div>
+            </li>
+            <li class="S_go"><img src="http://misc.360buyimg.com/skin/df/i/com/search_submit.jpg" class="S_input2" onfocus="this.blur()" onClick="search('keyword');return false;" /></li>
+        </ul>
+        <!--[if !ie]>Search end<![endif]-->
+        <ul id="Cart">
+            <li class="C_num">
+
+                <div id="CartSwitch_wrap"><img src="http://misc.360buyimg.com/skin/df/i/head3_18.gif" width="14" height="15" id="CartSwitch" /><a href="http://jd2008.360buy.com/purchase/shoppingcart.aspx" onClick="setWebBILinkCount('index_head_cart')">购物车有&nbsp;<strong id="ProductNum"></strong>&nbsp;件商品</a></div>
+            </li>
+            <li class="C_bal"><a href="http://jd2008.360buy.com/purchase/ShoppingCart.aspx" onClick="setWebBILinkCount('index_head_check')">去结算</a></li>
+            <li class="C_ord"><a href="http://jd2008.360buy.com/user_order.aspx" onClick="setWebBILinkCount('index_head_orders')">我的订单</a></li>
+        </ul>
+        <!--[if !ie]>Cart end<![endif]-->
+    </div>
+
+</div>
+<!--[if !ie]>顶部内容结束<![endif]-->
+<div id="MyCart"></div>
+<div id="My_Cart_Tip" class="Tip360"></div>
+<div id="Collect_Tip" class="Tip360 w260"></div>
+<div id="Fqfk_Tip" class="Tip360"></div>
+
+        <div class="Main">
+            <div id="PositionContainer">
+            </div>
+            <div class="right">
+                <div class="View_Mode">
+	<span class="float_Right">
+		<a href="http://club.360buy.com/allreview/1-1.html" class="link_1" target="_blank">全部最新商品评价>></a>
+	</span>
+	<div class="viewindex  viewindex_curr ">
+		<a href="http://club.360buy.com/review/109857-1-1-0.html">全部评价(411)</a>
+	</div>
+	<div class="viewindex ">
+		<a href="http://club.360buy.com/review/109857-1-1-5.html">好评(392)</a>
+	</div>
+	<div class="viewindex ">
+		<a href="http://club.360buy.com/review/109857-1-1-3.html">中评(17)</a>
+	</div>
+	<div class="viewindex ">
+		<a href="http://club.360buy.com/review/109857-1-1-1.html">差评(2)</a>
+	</div>
+	&nbsp;&nbsp;&nbsp;&nbsp;排序方式：<a href="http://club.360buy.com/review/109857-1-1-0.html"  class="curr" >最新</a>&nbsp;&nbsp;<a href="http://club.360buy.com/review/109857-2-1-0.html" >有用</a>
+</div>
+<ul class="PR_list">
+	<li name="陈晓1983" class="PR_list_l">
+		<a href="http://club.360buy.com/person/陈晓1983-1-1.html" target="_blank">
+			<img src="../images/60.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/陈晓1983-1-1.html" class="link_1" target="_blank">陈晓1983</a>
+		</div>
+		<div>铜牌会员</div>
+		<div style="color: Green;">(江苏)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-12 13:38</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_f26e977f-7e72-443a-a678-4bc9457872cf_1.html" class="link_1" target="_blank">机子不错！</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>机子不错！经典！</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>机子不错！还没发现缺点！  很好！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>机子不错！</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="f26e977f-7e72-443a-a678-4bc9457872cf" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(1)" title="1" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_f26e977f-7e72-443a-a678-4bc9457872cf_1.html'" />&nbsp;&nbsp;购买日期：2010-03-06
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="lmy76" class="PR_list_l">
+		<a href="http://club.360buy.com/person/lmy76-1-1.html" target="_blank">
+			<img src="../images/61.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/lmy76-1-1.html" class="link_1" target="_blank">lmy76</a>
+		</div>
+		<div>银牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-12 11:44</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_13d41c57-511d-417c-a512-e3786f451ea9_1.html" class="link_1" target="_blank">经典款~~不错</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>机器总体适合我使用</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>机器总体适合我使用</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="13d41c57-511d-417c-a512-e3786f451ea9" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_13d41c57-511d-417c-a512-e3786f451ea9_1.html'" />&nbsp;&nbsp;购买日期：2010-03-07
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="19660806" class="PR_list_l">
+		<a href="http://club.360buy.com/person/19660806-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/19660806-1-1.html" class="link_1" target="_blank">19660806</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(黑龙江)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-11 05:56</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_2837f7f1-df63-429d-b500-bb229619065b_1.html" class="link_1" target="_blank">正品行货</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>正品行货 高端机的功能 信价比好</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>内存卡小点512</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>价格实惠 值得推荐</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="2837f7f1-df63-429d-b500-bb229619065b" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_2837f7f1-df63-429d-b500-bb229619065b_1.html'" />&nbsp;&nbsp;购买日期：2010-03-04
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="hy707780262" class="PR_list_l">
+		<a href="http://club.360buy.com/person/hy707780262-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/hy707780262-1-1.html" class="link_1" target="_blank">hy707780262</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(江西)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-11 03:16</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_6b863d14-3cd8-47b8-bcd6-10efb484e86c_1.html" class="link_1" target="_blank">还好。。。</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>功能齐全，像素高，使用，不喜欢触摸，还是键盘好用，全键盘麻烦</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>内存卡不是MINI的说</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>还可以不错的，手感很好</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="6b863d14-3cd8-47b8-bcd6-10efb484e86c" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_6b863d14-3cd8-47b8-bcd6-10efb484e86c_1.html'" />&nbsp;&nbsp;购买日期：2010-02-21
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="xmsunday" class="PR_list_l">
+		<a href="http://club.360buy.com/person/xmsunday-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/xmsunday-1-1.html" class="link_1" target="_blank">xmsunday</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(福建)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-11 01:06</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_363b1bd1-23e2-4984-8076-a822b41984d3_1.html" class="link_1" target="_blank">....</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>价格实惠....</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>价格实惠....</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="363b1bd1-23e2-4984-8076-a822b41984d3" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_363b1bd1-23e2-4984-8076-a822b41984d3_1.html'" />&nbsp;&nbsp;购买日期：2010-02-21
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="ly1983" class="PR_list_l">
+		<a href="http://club.360buy.com/person/ly1983-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/ly1983-1-1.html" class="link_1" target="_blank">ly1983</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-10 22:53</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_92bb8eb3-83f9-4bde-9a7b-67ad875ad4f6_1.html" class="link_1" target="_blank">电池不禁用，反应速度慢！！</a>
+			</span>
+			<img src="../images/prg_003.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>电池不禁用，反应速度慢！！</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>电池不禁用，反应速度慢！！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>电池不禁用，反应速度慢！！</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="92bb8eb3-83f9-4bde-9a7b-67ad875ad4f6" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(1)" title="1"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_92bb8eb3-83f9-4bde-9a7b-67ad875ad4f6_1.html'" />&nbsp;&nbsp;购买日期：2010-02-26
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="linjie_" class="PR_list_l">
+		<a href="http://club.360buy.com/person/linjie_-1-1.html" target="_blank">
+			<img src="../images/62.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/linjie_-1-1.html" class="link_1" target="_blank">linjie_</a>
+		</div>
+		<div>金牌会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-09 18:35</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_647d3e4a-258c-4510-a913-2c4d3ec35aaa_1.html" class="link_1" target="_blank">73不错的机器</a>
+			</span>
+			<img src="../images/prg_004.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>像素不错有自动变焦功能   认证摄像头是亮点</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>机器反应死慢</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>总体还可以马马虎虎用  送人</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="647d3e4a-258c-4510-a913-2c4d3ec35aaa" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_647d3e4a-258c-4510-a913-2c4d3ec35aaa_1.html'" />&nbsp;&nbsp;购买日期：2010-02-24
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="hst988524" class="PR_list_l">
+		<a href="http://club.360buy.com/person/hst988524-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/hst988524-1-1.html" class="link_1" target="_blank">hst988524</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(湖北)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-09 07:30</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_dc5f3d2e-1165-41e0-838e-e41f4be65e30_1.html" class="link_1" target="_blank">自己用的</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>经典智能机，很赞哈</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>希望N73配件再全一些</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>很好很强大</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="dc5f3d2e-1165-41e0-838e-e41f4be65e30" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_dc5f3d2e-1165-41e0-838e-e41f4be65e30_1.html'" />&nbsp;&nbsp;购买日期：2010-02-25
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="zhangzs126" class="PR_list_l">
+		<a href="http://club.360buy.com/person/zhangzs126-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/zhangzs126-1-1.html" class="link_1" target="_blank">zhangzs126</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-08 19:02</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_e93f0304-d918-4a75-b1af-53b15f9c8419_1.html" class="link_1" target="_blank">还算满意的东东</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>像素高，皮实</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>还行吧，凑合用</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="e93f0304-d918-4a75-b1af-53b15f9c8419" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_e93f0304-d918-4a75-b1af-53b15f9c8419_1.html'" />&nbsp;&nbsp;购买日期：2010-02-26
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="fivecity" class="PR_list_l">
+		<a href="http://club.360buy.com/person/fivecity-1-1.html" target="_blank">
+			<img src="../images/63.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/fivecity-1-1.html" class="link_1" target="_blank">fivecity</a>
+		</div>
+		<div>钻石会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-08 17:01</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_cd15f6db-078d-4eb4-abf6-4f07318e4479_1.html" class="link_1" target="_blank">经典的手机</a>
+			</span>
+			<img src="../images/prg_003.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>很不错哦。经典。而且现在价格也不贵。</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>不错。没什么缺点的。</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="cd15f6db-078d-4eb4-abf6-4f07318e4479" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_cd15f6db-078d-4eb4-abf6-4f07318e4479_1.html'" />&nbsp;&nbsp;购买日期：2010-02-23
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="hcp289" class="PR_list_l">
+		<a href="http://club.360buy.com/person/hcp289-1-1.html" target="_blank">
+			<img src="../images/61.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/hcp289-1-1.html" class="link_1" target="_blank">hcp289</a>
+		</div>
+		<div>银牌会员</div>
+		<div style="color: Green;">(福建)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-08 14:06</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_811a59b2-d35e-47fb-87a7-b0aaaaee6f3d_1.html" class="link_1" target="_blank">不是很满意!</a>
+			</span>
+			<img src="../images/prg_003.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>行货!价廉!</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>手机电池接触不好!经常自动关机!</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>不是很满意!</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="811a59b2-d35e-47fb-87a7-b0aaaaee6f3d" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_811a59b2-d35e-47fb-87a7-b0aaaaee6f3d_1.html'" />&nbsp;&nbsp;购买日期：2009-10-05
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="zhenyicy" class="PR_list_l">
+		<a href="http://club.360buy.com/person/zhenyicy-1-1.html" target="_blank">
+			<img src="../images/60.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/zhenyicy-1-1.html" class="link_1" target="_blank">zhenyicy</a>
+		</div>
+		<div>铜牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-08 11:06</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_9d546fc5-7a90-4630-8c10-118186ed3d38_1.html" class="link_1" target="_blank">诺基亚N73</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>比较经典的机子</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>比较经典的机子</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="9d546fc5-7a90-4630-8c10-118186ed3d38" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_9d546fc5-7a90-4630-8c10-118186ed3d38_1.html'" />&nbsp;&nbsp;购买日期：2010-03-04
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="无形江南" class="PR_list_l">
+		<a href="http://club.360buy.com/person/无形江南-1-1.html" target="_blank">
+			<img src="../images/60.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/无形江南-1-1.html" class="link_1" target="_blank">无形江南</a>
+		</div>
+		<div>铜牌会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-07 21:46</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_e7aa8f38-ee44-4fec-9d43-681b555fbede_1.html" class="link_1" target="_blank">经典手机,适合我的手机</a>
+			</span>
+			<img src="../images/prg_004.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>经典的手机,前面一部N73我使用了三年半,现在依旧选他.</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>不错的经典手机,适合我的手机</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="e7aa8f38-ee44-4fec-9d43-681b555fbede" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_e7aa8f38-ee44-4fec-9d43-681b555fbede_1.html'" />&nbsp;&nbsp;购买日期：2010-02-28
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="52074804-49056177" class="PR_list_l">
+		<a href="http://club.360buy.com/person/52074804-49056177-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/52074804-49056177-1-1.html" class="link_1" target="_blank">52074804-49056177</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-06 21:08</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_4feaf914-55be-48a8-bd20-528ad1442d29_1.html" class="link_1" target="_blank">不错~挺好的</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>用起来挺好的，一直喜欢这款机器</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>经典的N70丢了，买了个N73做替代，一直也比较喜欢，用起来不错！</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="4feaf914-55be-48a8-bd20-528ad1442d29" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_4feaf914-55be-48a8-bd20-528ad1442d29_1.html'" />&nbsp;&nbsp;购买日期：2010-02-24
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="kankan47" class="PR_list_l">
+		<a href="http://club.360buy.com/person/kankan47-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/kankan47-1-1.html" class="link_1" target="_blank">kankan47</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 20:51</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_a66a8fdf-6fd7-4863-aebb-005ad3d5def2_1.html" class="link_1" target="_blank">还可以吧</a>
+			</span>
+			<img src="../images/prg_004.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>曾经的经典机器,用料扎实,功能不少.</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>如多数人反映的机器反应确实够慢,拿到手感到比预想中厚不少,量了一下最厚处21MM以上,规格介绍19mm;商品介绍应该更准确一点.侧面的按键不甚合理,不随时锁键盘的话,一拿机器就打开多媒体播放...</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>还可以,毕竟是几年以前的机型,这样的价格可以了</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="a66a8fdf-6fd7-4863-aebb-005ad3d5def2" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_a66a8fdf-6fd7-4863-aebb-005ad3d5def2_1.html'" />&nbsp;&nbsp;购买日期：2010-02-27
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="w372907328" class="PR_list_l">
+		<a href="http://club.360buy.com/person/w372907328-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/w372907328-1-1.html" class="link_1" target="_blank">w372907328</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(浙江)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 15:44</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_9de149d0-8833-45b3-bf9a-ba0dbdd1df0b_1.html" class="link_1" target="_blank">经典机型,比我在市场查的价格低。质量不错</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>质量不错。暂时没发现缺点。</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时没发现。</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>经典-价格便宜，满意。</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="9de149d0-8833-45b3-bf9a-ba0dbdd1df0b" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_9de149d0-8833-45b3-bf9a-ba0dbdd1df0b_1.html'" />&nbsp;&nbsp;购买日期：2010-03-01
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="上海王彬" class="PR_list_l">
+		<a href="http://club.360buy.com/person/上海王彬-1-1.html" target="_blank">
+			<img src="../images/88.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/上海王彬-1-1.html" class="link_1" target="_blank">上海王彬</a>
+		</div>
+		<div>双钻会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 15:03</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_d1e4d9fe-d42a-4fd8-8c74-c0b027b2c73f_1.html" class="link_1" target="_blank">蛮实惠的</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>功能蛮多的</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>有时反映不怎么快</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>还可以,蛮实惠的</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="d1e4d9fe-d42a-4fd8-8c74-c0b027b2c73f" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_d1e4d9fe-d42a-4fd8-8c74-c0b027b2c73f_1.html'" />&nbsp;&nbsp;购买日期：2010-03-01
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="上海王彬" class="PR_list_l">
+		<a href="http://club.360buy.com/person/上海王彬-1-1.html" target="_blank">
+			<img src="../images/88.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/上海王彬-1-1.html" class="link_1" target="_blank">上海王彬</a>
+		</div>
+		<div>双钻会员</div>
+		<div style="color: Green;">(上海)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 15:02</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_b067faed-a86f-4cd0-b374-544dfb58dc75_1.html" class="link_1" target="_blank">蛮实惠的</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>功能蛮多的</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>有时反映不怎么快</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>还可以,蛮实惠的</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="b067faed-a86f-4cd0-b374-544dfb58dc75" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_b067faed-a86f-4cd0-b374-544dfb58dc75_1.html'" />&nbsp;&nbsp;购买日期：2010-03-01
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="kingandangels" class="PR_list_l">
+		<a href="http://club.360buy.com/person/kingandangels-1-1.html" target="_blank">
+			<img src="../images/56.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/kingandangels-1-1.html" class="link_1" target="_blank">kingandangels</a>
+		</div>
+		<div>铁牌会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 14:01</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_658fecb9-1f63-40af-9650-cd1d9d1c049f_1.html" class="link_1" target="_blank">现在这个价格还是不错的</a>
+			</span>
+			<img src="../images/prg_005.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>实用 反潮流的首选。哈哈</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>暂时还没发现缺点哦！</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>不追求面子，实用的</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="658fecb9-1f63-40af-9650-cd1d9d1c049f" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_658fecb9-1f63-40af-9650-cd1d9d1c049f_1.html'" />&nbsp;&nbsp;购买日期：2010-02-27
+			</div>
+		</div>
+							</li>
+</ul>
+<ul class="PR_list">
+	<li name="wp879" class="PR_list_l">
+		<a href="http://club.360buy.com/person/wp879-1-1.html" target="_blank">
+			<img src="../images/88.gif" />
+		</a>
+		<div>
+			<a href="http://club.360buy.com/person/wp879-1-1.html" class="link_1" target="_blank">wp879</a>
+		</div>
+		<div>双钻会员</div>
+		<div style="color: Green;">(北京)</div>
+	</li>
+	<li class="PR_list_r">
+		<div class="re_topic">
+			<span class="float_Right">2010-03-05 13:18</span>
+			<span class="topic">
+				<a href="http://club.360buy.com/repay/109857_8e6e23ca-67f5-4de8-af63-268b63341b05_1.html" class="link_1" target="_blank">买来屏幕就是坏的</a>
+			</span>
+			<img src="../images/prg_001.jpg" width="72" height="12" />
+		</div>
+		<div class="re_con">
+						<dl>
+				<dt>优点：</dt>
+				<dd>买来屏幕就是坏的</dd>
+			</dl>
+			<dl>
+				<dt>不足：</dt>
+				<dd>买来屏幕就是坏的，不能退，只能在诺基亚维修换屏幕。看样下回这种东西直接去京东提货，比较安全。快递的是拿了钱就跑。</dd>
+			</dl>
+									<dl>
+				<dt>总结：</dt>
+				<dd>很不满意！</dd>
+			</dl>
+						<div class="re_con_buttons">
+				<span id="8e6e23ca-67f5-4de8-af63-268b63341b05" class="float_Right">
+					这条评价对您有用吗？&nbsp;<input name="agree" type="button" class="btn1" value="有用(0)" title="0" />&nbsp;<input name="oppose" type="button" class="btn1" value="没用(0)" title="0"/>
+				</span>
+				<input type="button" class="btn1" value="回复(0)" onclick="location.href='http://club.360buy.com/repay/109857_8e6e23ca-67f5-4de8-af63-268b63341b05_1.html'" />&nbsp;&nbsp;购买日期：2010-02-24
+			</div>
+		</div>
+							</li>
+</ul>
+<div class="Pagination"><a href="http://club.360buy.com/review/109857-1-1-0.html">&laquo;上一页</a><a href="http://club.360buy.com/review/109857-1-1-0.html">1</a><a class="current" href="http://club.360buy.com/review/109857-1-2-0.html">2</a><a href="http://club.360buy.com/review/109857-1-3-0.html">3</a><a href="http://club.360buy.com/review/109857-1-20-0.html">20</a><a href="http://club.360buy.com/review/109857-1-21-0.html">21</a><a href="http://club.360buy.com/review/109857-1-3-0.html">下一页&raquo;</a></div>
+
+                <div id="review" class="Review_Form">
+                    <h5>
+                        发表评价并打分：</h5>
+                    <div class="Re_Explain">
+                        欢迎您发表原创、实用、生动的商品评价，好的评价会在首页展示并获得额外的积分奖励哦！</div>
+                    <ul>
+                        <li id="point"><span style="display: inline;">评分：</span>
+                            <input name="point" type="radio" value="5" />5分&nbsp;&nbsp;
+                            <input name="point" type="radio" value="4" />4分&nbsp;&nbsp;
+                            <input name="point" type="radio" value="3" />3分&nbsp;&nbsp;
+                            <input name="point" type="radio" value="2" />2分&nbsp;&nbsp;
+                            <input name="point" type="radio" value="1" />1分&nbsp;&nbsp;&nbsp;&nbsp;(请针对商品质量进行打分)
+                            <label class="error" for="point" style="display: none;">
+                                必填</label>
+                        </li>
+                        <li id="researchBox" style="display: none;">
+                            <div class="researchBox">
+                                您给予了本商品差评，我们想进一步了解原因：<br />
+                                <input type="radio" name="r1" value="s1" />对商品质量不满意&nbsp;&nbsp;&nbsp;&nbsp;<input
+                                    type="radio" name="r1" value="s2" />对京东服务不满意
+                                <label class="error" for="r1" style="display: none;">
+                                    必填</label>
+                                <div id="text1" class="text">
+                                    京东商城一直以来以提供优质的产品和满意的服务为己任，如果个别商品确实存在质量问题，您可享受到京东提供的全方位<a href="http://www.360buy.com/help/return_policy.aspx"
+                                        target="_blank" class="link_1">售后服务</a>。同时我们会对问题商品进行自检甚至下柜处理，让更多用户买到称心如意、物美价廉的商品。</div>
+                                <div id="text2" class="text">
+                                    京东商城一直在努力提高自身服务水平，但我们也承认一些地方仍然存在不足。如果您有关于京东服务的意见或投诉，请您进入“<a href="http://jd2008.360buy.com/complaint.aspx"
+                                        class="link_1">我的投诉&gt;&gt;</a>”页面进行投诉，我们会有专人为您解决问题。<br />
+                                    如果您要发表商品评价，介绍商品功能及使用心得，欢迎您在上方仅针对商品本身进行重新打分。</div>
+                            </div>
+                        </li>
+                        <li><span>标题：</span>
+                            <input id="title" name="title" class="input1" type="text" />
+                        </li>
+                        <li><span>您认为该商品的优点是：</span>
+                            <textarea id="pros" name="pros" class="area2"></textarea>(还可输入<strong id="prosCounter"></strong>个字)
+                        </li>
+                        <li><span>您认为该商品的不足是：</span>
+                            <textarea id="cons" name="cons" class="area2">暂时还没发现缺点哦！</textarea>(还可输入<strong id="consCounter"></strong>个字)
+                        </li>
+                        <li><span>总结：</span>
+                            <textarea id="content" name="content" class="area2"></textarea>(还可输入<strong id="contentCounter"></strong>个字)
+                        </li>
+                        <li class="buttons">
+                            <img id="saveComment" src="../images/submit_1.gif" width="77" height="28" /></li>
+                    </ul>
+                    <div class="Re_Explain">
+                        声明：<br />
+                        1、欢迎您在此发表与商品质量、使用情况、心得体验相关的内容和评价，以帮助其他用户了解商品；<br />
+                        2、商品评价采用先发布后审核原则，如果我们认为您的评价不能给其他用户带来帮助或违反国家有关规定，京东商城有权删除您的评价；<br />
+                        3、只有购买过该商品且在半年内的用户才能进行评价，每条通过审核的评价均能获得一定积分奖励（赠品不给分，同一商品仅能评价一次），<a href="http://www.360buy.com/help/point.aspx"
+                            target="_blank" class="link_1">查看具体规则</a>
+                    </div>
+                </div>
+            </div>
+            <div class="left">
+                <h2>
+                    商品信息</h2>
+                <div id="Pro_Info">
+	<p id="p_Image">
+		<a href="http://www.360buy.com/product/109857.html"><img src="http://img10.360buyimg.com/S2/1248/cddb9a32-1906-4751-98c0-cf2a5b6784e7.jpg" width="150" height="113" onerror="this.src='http://www.360buy.com/images/none/none_150.gif'" /></a>
+	</p>
+	<p>商品名称：<a href="http://www.360buy.com/product/109857.html" class="link_1">诺基亚（Nokia）N73 GSM手机(黑色) 非移动定制机</a></p>
+	<p>京&nbsp;东&nbsp;价：<strong><img onerror="this.src='http://www.360buy.com/images/no2.gif'" src="http://price.360buy.com/PD4F8867D99ECCE33EC48D13ABCA63269,1.png"/></strong></p>
+	<p>评价得分：<img src="../images/prg_004.jpg" width="72" height="12" />(4分)</p>
+	<p>评&nbsp;论&nbsp;数：411条</p>
+	<p id="p_Button">
+		<a href="http://jd2008.360buy.com/purchase/InitCart.aspx?pid=109857&pcount=1&ptype=1"><img src="../images/appendToCart.jpg" width="182" height="37" /></a>
+	</p>
+</div>
+                
+                <div id="miaozhen8151" class="AD_L">
+
+                    <script type="text/javascript" src="http://360buy.a.miaozhen.com/a.gif?l=8151"></script>
+
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="http://www.360buy.com/script/jquery-plugins-vs1-20090707.js"></script>
+
+        <script type="text/javascript" src="http://www.360buy.com/script/jquery-plugins-vs2.js"></script>
+
+        <script type="text/javascript" src="http://jd2008.360buy.com/purchase/script/minicart.js"></script>
+
+        <script type="text/javascript" src="http://club.360buy.com/script/jquery.twitterCounter.1.0.0.js"></script>
+
+        <div class="Help"> 
+	<dl> 
+		<dt><img src="http://misc.360buyimg.com/skin/df/i/com/help_gwzn.gif" alt="购物指南"/></dt> 
+		<dd><a target="_blank"  href="http://www.360buy.com/help/flow.aspx">购物流程</a></dd><dd><a target="_blank" href="http://www.360buy.com/help/member.aspx">会员介绍</a></dd> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/order.aspx">订单状态</a></dd><dd><a target="_blank"  href="http://www.360buy.com/help/faq.aspx">常见问题</a></dd> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/helectronic.aspx">大 家 电</a></dd><dd><a  target="_blank" href="http://www.360buy.com/help/callcenter.aspx">联系客服</a></dd> 
+	</dl> 
+	<dl> 
+		<dt><img src="http://misc.360buyimg.com/skin/df/i/com/help_psfs.gif" alt="配送方式"/></dt> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/ziti.aspx">上门自提</a></dd><dd><a  target="_blank" href="http://www.360buy.com/help/kdexpress.aspx">快递运输</a></dd> 
+		<dd><a  target="_blank" href="http://www.360buy.com/help/ems.aspx">e邮宝(经济EMS)</a></dd> 
+		 
+	</dl> 
+	<dl> 
+		<dt><img src="http://misc.360buyimg.com/skin/df/i/com/help_zffs.gif" alt="支付方式"/></dt> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/cod.aspx">货到付款</a></dd><dd><a  target="_blank" href="http://www.360buy.com/help/onlinepay.aspx">在线支付</a></dd> 
+		<dd><a  target="_blank" href="http://www.360buy.com/help/dividedpay.aspx">分期付款</a></dd> 
+		<dd><a target="_blank"  href="http://www.360buy.com/help/postage.aspx">邮局汇款</a></dd> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/transfer.aspx">公司转账</a></dd> 
+	</dl> 
+	<dl> 
+		<dt><img src="http://misc.360buyimg.com/skin/df/i/com/help_shfw.gif" alt="售后服务"/></dt> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/return_policy.aspx">退换货政策</a></dd><dd><a target="_blank"  href="http://www.360buy.com/help/return_flow.aspx">退换货流程</a></dd> 
+		<dd><a target="_blank"  href="http://www.360buy.com/help/price.aspx">价格保护</a></dd><dd><a target="_blank" href="http://www.360buy.com/help/refundment.aspx">退款说明</a></dd> 
+		<dd><a target="_blank"  href="http://jd2008.360buy.com/Repairs.aspx">返修申请</a></dd><dd><a target="_blank" href="http://jd2008.360buy.com/user_refundment.aspx">退款申请</a></dd>
+	</dl> 
+	<dl class="Help_b5"> 
+		<dt><img src="http://misc.360buyimg.com/skin/df/i/com/help_tsfw.gif" alt="特色服务"/></dt> 
+		<dd><a target="_blank" href="http://www.360buy.com/help/bid.aspx">商品拍卖</a></dd><dd><a target="_blank" href="http://www.360buy.com/help/diy.aspx">DIY装机</a></dd> 
+		<dd><a target="_blank"  href="http://market.360buy.com/hd/yanbao090702/ind.html">延保服务</a></dd><dd><a target="_blank" href="http://www.360buy.com/help/visitservice.aspx">上门服务</a></dd> 
+		<dd><a target="_blank" href="http://market.360buy.com/jifen/">积分兑换</a></dd><dd><a target="_blank" href="http://market.360buy.com/giftcard/index.html">京东礼品卡</a></dd> 
+	</dl> 
+</div><!--[if !ie]>Help end<![endif]--> 	<!--[if !ie]>底部内容开始<![endif]--> 
+<div class="Footer_Nav"> 
+    <a target="_blank"  href="http://www.360buy.com/intro/about.aspx">关于我们</a>|<a target="_blank"   href="http://www.360buy.com/contact/">联系我们</a>|<a target="_blank"  href="http://www.360buy.com/intro/service.aspx">广告服务</a>|<a target="_blank"  href="http://www.360buy.com/intro/job.aspx">人才招聘</a>|<a target="_blank"  href="http://club.360buy.com/">京东社区</a>|<a target="_blank"  href="http://club.360buy.com/allreview/1-1.html">商品评价</a>|<a target="_blank"  href="http://club.360buy.com/links.aspx">友情链接</a></div> 
+<!--[if !ie]>Footer_Nav end<![endif]--> 
+<div class="Copyright"> 
+    北京市公安局海淀分局备案编号：1101081681&nbsp;&nbsp;<a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202007080200026" class="icp">京ICP证070359号</a><br /> 
+    Copyright&copy;2004-2010&nbsp;&nbsp;360buy京东商城&nbsp;&nbsp;版权所有<br/> 
+</div> 
+<!--[if !ie]>Copyright end<![endif]--> 
+<div class="Footer_Link"> 
+   <a href="http://www.hd315.gov.cn/beian/view.asp?bianhao=010202007080200026" target="_blank"><img src="http://misc.360buyimg.com/skin/df/i/com/f_icp.gif"   alt="经营性网站备案中心" /></a><a href="https://tns-ssverify.cnnic.cn/verifyseal.dll?dn=www.360buy.com" target="_blank"><img src="http://misc.360buyimg.com/skin/df/i/com/f_cnnic.gif" alt="站点卫视" /></a></div> 
+<!--[if !ie]>Footer_Link end<![endif]--> 
+<!-- loginhello--> 
+<span id="vtip"> 
+    <script type="text/javascript"  src="http://passport.360buy.com/hello.aspx"></script> 
+</span> 
+<script type="text/javascript"> 
+  var s=document.getElementById("vtip1");
+    if(s)
+	{
+	  document.getElementById("vtip1").innerHTML=document.getElementById("vtip").innerHTML;
+	  document.getElementById("vtip").innerHTML="";
+	}
+    else
+	{
+	  document.getElementById("vtip").innerHTML="";
+	}
+</script> 
+<!-- keywords--> 
+<script type="text/javascript" src="http://www.360buy.com/hotwords.aspx"></script>
+<script type="text/javascript" src="http://www.360buy.com/script/jquery-plugins-vs1-20090707.js"></script>
+<script type="text/javascript" src="http://jd2008.360buy.com/purchase/script/minicart.js"></script> 
+<script type="text/javascript" src="http://search.360buy.com/script/search_plug.js"></script>
+<script type="text/javascript" src="http://club.360buy.com/jdfriend/script/friend.js" ></script> 
+<script type="text/javascript" src="http://wl.360buy.com/wl.js" ></script> 
+<script src="http://360buy.iwebtracker.cn/dma.js?4b541a3f83477" type="text/javascript"></script> 
+<script type="text/javascript"> 
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script> 
+<script type="text/javascript"> 
+var pageTracker = _gat._getTracker("UA-2176661-1");pageTracker._setDomainName("360buy.com");
+pageTracker._trackPageview();
+</script>
+<!--[if !ie]>底部内容结束<![endif]--> </form>
+</body>
+</html>

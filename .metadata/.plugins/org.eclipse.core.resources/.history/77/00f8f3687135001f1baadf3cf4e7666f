@@ -1,0 +1,291 @@
+/*
+ * Parser.cpp
+ *
+ *  Created on: Mar 19, 2010
+ *      Author: lehou
+ */
+
+#include <stdio.h>
+#include <string>
+#include <string.h>
+
+#include "json/value.h"
+#include "json/reader.h"
+
+#include "node_type.h"
+#include "html_parser.h"
+#include "node.h"
+
+using namespace std;
+using namespace Json;
+using namespace galaxy::utility::htmlparser;
+
+struct NodeXPath
+{
+	char* pszNodeName;
+	char* pszAttrName;
+	char* pszAttrValue;
+
+	NodeXPath()
+	{
+		pszNodeName = NULL;
+		pszAttrValue = NULL;
+		pszAttrName = NULL;
+	}
+
+	void SetNodeName(const char* cszNodeName)
+	{
+		int iLen = strlen(cszNodeName);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszNodeName = new char[iLen];
+
+		strcpy(pszNodeName, cszNodeName);
+	}
+
+	void SetAttrName(const char* cszAttrName)
+	{
+		int iLen = strlen(cszAttrName);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszAttrName = new char[iLen];
+
+		strcpy(pszAttrName, cszAttrName);
+	}
+
+	void SetAttrValue(const char* cszAttrValue)
+	{
+		int iLen = strlen(cszAttrValue);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszAttrValue = new char[iLen];
+
+		strcpy(pszAttrValue, cszAttrValue);
+	}
+
+	~NodeXPath()
+	{
+		if (NULL != pszNodeName)
+		{
+			delete [] pszNodeName;
+		}
+
+		if (NULL != pszAttrName)
+		{
+			delete [] pszAttrName;
+		}
+
+		if (NULL != pszAttrValue)
+		{
+			delete [] pszAttrValue;
+		}
+	}
+
+};
+
+char* rgszNodeType[] =
+{
+		"TEXT",
+		"A"
+
+};
+
+void test()
+{
+	FILE* fp = fopen("/home/lehou/source/daogou/spider/extractor/trunk/src/parser/vdom-parser/xhunter/markit/wrappers/comment/360buy.com/1.wrapper",
+			"r");
+	if (NULL == fp)
+	{
+		return;
+	}
+
+	string strContent;
+	char szLine[1000];
+	while (NULL != fgets(szLine, 1000, fp))
+	{
+		strContent += szLine;
+	}
+	fclose(fp);
+
+	//puts(strContent.c_str());
+
+	Reader jsonReader;
+	Value jsonRoot;
+	bool bParseSucceed = jsonReader.parse(strContent, jsonRoot);
+	if (!bParseSucceed)
+	{
+		puts(jsonReader.getFormatedErrorMessages().c_str());
+		return;
+	}
+
+	Value jsonProductName = jsonRoot["childPatterns"]["product_name"];
+	if (jsonProductName.isNull())
+	{
+		puts("Cannot get product name");
+		return;
+	}
+
+	string temp = jsonProductName.toStyledString();
+	puts(temp.c_str());
+
+	Value jsonSelector = jsonProductName["selector"];
+	puts(jsonSelector.toStyledString().c_str());
+	//puts(jsonProductName.asString().c_str());
+	HtmlParser* pHtmlParser = new HtmlParser(NULL);
+
+	FILE* fpPage = fopen("/home/lehou/workspace/Parser/Debug/109857-1-2-0.html", "r");
+	if (NULL == fpPage)
+	{
+		puts("Cannot open page.");
+		return;
+	}
+	string strPage;
+	while (NULL != fgets(szLine, 1000, fpPage))
+	{
+		strPage += szLine;
+	}
+	fclose(fpPage);
+	//string strPage = http://club.360buy.com/review/109857-1-2-0.html";//"<html><body>test</body></html>";
+	Node* pNode = pHtmlParser->Parse(strPage);
+	if (NULL == pNode)
+	{
+		puts("Cannot get the root");
+  	    return;
+	}
+
+	GetNodesByXPath(Node* pRootNode, char* cszXPath, Node** ppNodeList)
+
+	Node* pTemp = pNode->GetLeftChild();
+	string strTemp = pTemp->GetContent();
+	NodeType nodeType = pTemp->GetNodeType();
+
+	puts(strTemp.c_str());
+}
+
+NodeXPath GetNodeXPath(const char* cszNodeName)
+{
+	NodeXPath nodeXPath;
+	int iXpathLen = strlen(cszNodeName);
+	if (0 == iXpathLen)
+	{
+		return nodeXPath;
+	}
+
+	char* szXPath = new char[iXpathLen];
+
+	if (NULL == strcpy(szXPath, cszNodeName))
+	{
+		return nodeXPath;
+	}
+
+	char* pszStart = szXPath;
+	char* pszEnd = szXPath;
+
+	while (*pszEnd != '\0' && *pszEnd != '.' && *pszEnd != '#')
+	{
+		++pszEnd;
+	}
+
+	if ('\0' == *pszEnd)
+	{
+		nodeXPath.SetNodeName(pszStart);
+	}
+
+	if ('.' == *pszEnd)
+	{
+		nodeXPath.SetAttrName("class");
+		*pszEnd = '\0';
+		nodeXPath.SetAttrName(pszStart);
+		pszStart = pszEnd + 1;
+		nodeXPath.SetAttrValue(pszStart);
+
+	}
+
+	if ('#' == *pszEnd)
+	{
+		nodeXPath.SetAttrName("id");
+		*pszEnd = '\0';
+		nodeXPath.SetAttrName(pszStart);
+		pszStart = pszEnd + 1;
+		nodeXPath.SetAttrValue(pszStart);
+	}
+
+	return nodeXPath;
+}
+
+int GetNodesByXPath(Node* pRootNode, char* cszXPath, Node** ppNodeList)
+{
+	if (NULL == pRootNode || NULL == ppNodeList || NULL == cszXPath)
+	{
+		return 0;
+	}
+
+
+	int iXpathLen = strlen(cszXPath);
+	if (0 == iXpathLen)
+	{
+		return 0;
+	}
+
+	char* szXPath = new char[iXpathLen];
+
+	if (NULL == strcpy(szXPath, cszXPath))
+	{
+		return 0;
+	}
+
+	char* pNodeNameStart = szXPath;
+	char* pNodeNameEnd = szXPath;
+	Node* pCurrentNode = pRootNode;
+	while (true)
+	{
+		while (*pNodeNameEnd != '>' && *pNodeNameEnd != '\0')
+		{
+			pNodeNameEnd++;
+		}
+
+		if ('\0' == *pNodeNameEnd)
+		{
+			break;
+		}
+
+		*pNodeNameEnd = '/0';
+
+		NodeXPath nodeXPath = GetNodeXPath(pNodeNameStart);
+
+		// To get the node by current Node name
+		Node* pNodeTemp = pCurrentNode->GetLeftChild();
+		while (NULL != pNodeTemp)
+		{
+			NodeType nodeType = pNodeTemp->GetNodeType();
+			if (0 == strcmp(nodeXPath.pszNodeName, rgszNodeType[(int)nodeType]))
+			{
+				break;
+			}
+			pNodeTemp = pNodeTemp->GetSibling();
+		}
+		if (NULL == pNodeTemp)
+		{
+			break;
+		}
+	}
+
+	delete [] szXPath;
+	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	test();
+	puts("Runs in new linus env.");
+	return 0;
+}

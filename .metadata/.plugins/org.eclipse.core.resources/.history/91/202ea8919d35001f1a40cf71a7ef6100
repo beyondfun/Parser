@@ -1,0 +1,561 @@
+/*
+ * Parser.cpp
+ *
+ *  Created on: Mar 19, 2010
+ *      Author: lehou
+ */
+
+#include <stdio.h>
+#include <string>
+#include <string.h>
+
+#include "json/value.h"
+#include "json/reader.h"
+
+#include "node_type.h"
+#include "html_parser.h"
+#include "node.h"
+
+using namespace std;
+using namespace Json;
+using namespace galaxy::utility::htmlparser;
+
+int GetNodesByXPath(Node* pRootNode, const char* cszXPath, Node** ppNodeList);
+Node* GetNodeByXPath(Node* pRootNode, const char* cszXPath);
+Node* GetNextNode(const Node *node);
+
+struct NodeXPath
+{
+	char* pszNodeName;
+	char* pszAttrName;
+	char* pszAttrValue;
+
+	NodeXPath()
+	{
+		pszNodeName = NULL;
+		pszAttrValue = NULL;
+		pszAttrName = NULL;
+	}
+
+	void SetNodeName(const char* cszNodeName)
+	{
+		int iLen = strlen(cszNodeName);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszNodeName = new char[iLen];
+
+		strcpy(pszNodeName, cszNodeName);
+	}
+
+	void SetAttrName(const char* cszAttrName)
+	{
+		int iLen = strlen(cszAttrName);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszAttrName = new char[iLen];
+
+		strcpy(pszAttrName, cszAttrName);
+	}
+
+	void SetAttrValue(const char* cszAttrValue)
+	{
+		int iLen = strlen(cszAttrValue);
+		if (0 == iLen)
+		{
+			return;
+		}
+
+		pszAttrValue = new char[iLen];
+
+		strcpy(pszAttrValue, cszAttrValue);
+	}
+
+	~NodeXPath()
+	{
+		if (NULL != pszNodeName)
+		{
+			delete [] pszNodeName;
+		}
+
+		if (NULL != pszAttrName)
+		{
+			delete [] pszAttrName;
+		}
+
+		if (NULL != pszAttrValue)
+		{
+			delete [] pszAttrValue;
+		}
+	}
+
+};
+
+char* rgszNodeType[] =
+{
+	"TEXT",
+	"A",
+	"ABBR",
+	"ACRONYM",
+	"ADDRESS",
+	"APPLET",
+	"AREA",
+	"ARTICLE",
+	"ASIDE",
+	"AUDIO",
+	"B",
+	"BASE",
+	"BASEFONT",
+	"BDO",
+	"BIG",
+	"BLOCKQUOTE",
+	"BODY",
+	"BR",
+	"BUTTON",
+	"CANVAS",
+	"CAPTION",
+	"CENTER",
+	"CITE",
+	"CODE",
+	"COL",
+	"COLGROUP",
+	"COMMAND",
+	"DATAGRID",
+	"DATALIST",
+	"DATATEMPLATE",
+	"DD",
+	"DEL",
+	"DETAILS",
+	"DIALOG",
+	"DFN",
+	"DIR",
+	"DIV",
+	"DL",
+	"DT",
+	"EM",
+	"EMBED",
+	"EVENTSOURCE",
+	"FIELDSET",
+	"FIGURE",
+	"FONT",
+	"FOOTER",
+	"FORM",
+	"FRAME",
+	"FRAMESET",
+	"HEAD",
+	"HEADER",
+	"H1",
+	"H2",
+	"H3",
+	"H4",
+	"H5",
+	"H6",
+	"HR",
+	"HTML",
+	"I",
+	"IFRAME",
+	"IMG",
+	"INPUT",
+	"INS",
+	"KBD",
+	"LABEL",
+	"LEGEND",
+	"LI",
+	"LINK",
+	"M",
+	"MAP",
+	"MENU",
+	"META",
+	"METER",
+	"NAV",
+	"NEST",
+	"NOFRAMES",
+	"NOSCRIPT",
+	"OBJECT",
+	"OL",
+	"OPTGROUP",
+	"OPTION",
+	"OUTPUT",
+	"P",
+	"PARAM",
+	"PRE",
+	"PROGRESS",
+	"Q",
+	"RULE",
+	"S",
+	"SAMP",
+	"SCRIPT",
+	"SECTION",
+	"SELECT",
+	"SMALL",
+	"SOURCE",
+	"SPAN",
+	"STRIKE",
+	"STRONG",
+	"STYLE",
+	"SUB",
+	"SUP",
+	"TABLE",
+	"TBODY",
+	"TD",
+	"TEXTAREA",
+	"TFOOT",
+	"TH",
+	"THEAD",
+	"TIME",
+	"TITLE",
+	"TR",
+	"TT",
+	"U",
+	"UL",
+	"VAR",
+	"VIDEO",
+	"DOCTYPE",
+	"QUESTIONMARK",
+	"REMARK",
+	"UNDEF_NODE"
+};
+
+const char* GetInnerText(Node* pNode)
+{
+	if (NULL == pNode)
+	{
+		return NULL;
+	}
+
+	Node* pTempNode = GetNextNode(pNode);
+	if (NULL == pTempNode)
+	{
+		return NULL;
+	}
+
+	NodeType nodeType = pTempNode->GetNodeType();
+
+	return NULL;
+}
+
+void test()
+{
+	FILE* fp = fopen("/home/lehou/source/daogou/spider/extractor/trunk/src/parser/vdom-parser/xhunter/markit/wrappers/comment/360buy.com/1.wrapper",
+			"r");
+	if (NULL == fp)
+	{
+		return;
+	}
+
+	string strContent;
+	char szLine[1000];
+	while (NULL != fgets(szLine, 1000, fp))
+	{
+		strContent += szLine;
+	}
+	fclose(fp);
+
+	//puts(strContent.c_str());
+
+	Reader jsonReader;
+	Value jsonRoot;
+	bool bParseSucceed = jsonReader.parse(strContent, jsonRoot);
+	if (!bParseSucceed)
+	{
+		puts(jsonReader.getFormatedErrorMessages().c_str());
+		return;
+	}
+
+	// To get the product name
+	Value jsonProductName = jsonRoot["childPatterns"]["product_name"];
+	if (jsonProductName.isNull())
+	{
+		puts("Cannot get product name");
+		return;
+	}
+
+	Value jsonSelector = jsonProductName["selector"];
+	puts(jsonSelector.toStyledString().c_str());
+	//puts(jsonProductName.asString().c_str());
+	HtmlParser* pHtmlParser = new HtmlParser(NULL);
+
+	FILE* fpPage = fopen("/home/lehou/workspace/Parser/Debug/109857-1-2-0.html", "r");
+	if (NULL == fpPage)
+	{
+		puts("Cannot open page.");
+		return;
+	}
+	string strPage;
+	while (NULL != fgets(szLine, 1000, fpPage))
+	{
+		strPage += szLine;
+	}
+	fclose(fpPage);
+
+	Node* pRootNode = pHtmlParser->Parse(strPage);
+	if (NULL == pRootNode)
+	{
+		puts("Cannot get the root");
+  	    return;
+	}
+
+	Node* pNode = GetNodeByXPath(pRootNode, jsonSelector.toStyledString().c_str());
+	if (NULL == pNode)
+	{
+		return;
+	}
+
+	string strText = pNode->GetContent();
+	puts("fdjflasdfjdaslkfj");
+	puts(strText.c_str());
+//	Node** ppNodeList = NULL;
+//	int iRet = GetNodesByXPath(pRootNode, jsonSelector.toStyledString().c_str(), ppNodeList);
+//	if (0 == iRet)
+//	{// Cannot get the value of the path
+//		return;
+//	}
+
+//	Node* pTemp = pNode->GetLeftChild();
+//	string strTemp = pTemp->GetContent();
+//	NodeType nodeType = pTemp->GetNodeType();
+
+//	puts(strTemp.c_str());
+}
+
+Node* GetNextNode(const Node *node)
+{
+    if (NULL == node)
+    {
+        return NULL;
+    }
+
+    Node *next = NULL;
+    next = node->GetLeftChild();
+    if (NULL == next)
+    {
+        while (NULL == node->GetSibling())
+        {
+            node = node->GetParent();
+            if (NULL == node)
+            {
+                return NULL;
+            }
+        }
+        next = node->GetSibling();
+    }
+    return next;
+}
+
+NodeXPath GetNodeXPath(const char* cszNodeName)
+{
+	NodeXPath nodeXPath;
+	int iXpathLen = strlen(cszNodeName);
+	if (0 == iXpathLen)
+	{
+		return nodeXPath;
+	}
+
+	char* szXPath = new char[iXpathLen];
+
+	if (NULL == strcpy(szXPath, cszNodeName))
+	{
+		return nodeXPath;
+	}
+
+	char* pszStart = szXPath;
+	char* pszEnd = szXPath;
+
+	while (*pszEnd != '\0' && *pszEnd != '.' && *pszEnd != '#')
+	{
+		++pszEnd;
+	}
+
+	if ('\0' == *pszEnd)
+	{
+		nodeXPath.SetNodeName(pszStart);
+	}
+
+	if ('.' == *pszEnd)
+	{
+		nodeXPath.SetAttrName("class");
+		*pszEnd = '\0';
+		nodeXPath.SetNodeName(pszStart);
+		pszStart = pszEnd + 1;
+		nodeXPath.SetAttrValue(pszStart);
+
+	}
+
+	if ('#' == *pszEnd)
+	{
+		nodeXPath.SetAttrName("id");
+		*pszEnd = '\0';
+		nodeXPath.SetNodeName(pszStart);
+		pszStart = pszEnd + 1;
+		nodeXPath.SetAttrValue(pszStart);
+	}
+
+	return nodeXPath;
+}
+
+Node* GetNodeByXPath(Node* pRootNode, const char* cszXPath)
+{
+	if (NULL == pRootNode || NULL == cszXPath)
+	{
+		return NULL;
+	}
+
+	int iXpathLen = strlen(cszXPath);
+	if (0 == iXpathLen)
+	{
+		return 0;
+	}
+
+	char* szXPath = new char[iXpathLen];
+
+	if (NULL == strcpy(szXPath, cszXPath))
+	{
+		return 0;
+	}
+
+	char* pNodeNameStart = szXPath + 1;  // Skip the first "
+	char* pNodeNameEnd = pNodeNameStart;
+	szXPath[iXpathLen - 1] = '\0';       // Remove the last \n
+	szXPath[iXpathLen - 2] = '\0';       // Remove the last "
+	Node* pCurrentNode = pRootNode;
+	puts(pNodeNameStart);
+	Node* pNodeTemp = NULL;
+	while (true)
+	{
+		if ('\0' == *pNodeNameStart)
+		{
+			break;
+		}
+
+		while (*pNodeNameEnd != '>' && *pNodeNameEnd != '\0')
+		{
+			pNodeNameEnd++;
+		}
+		*pNodeNameEnd = '\0';
+
+		NodeXPath nodeXPath = GetNodeXPath(pNodeNameStart);
+
+		// To get the node by current Node name
+		pNodeTemp = GetNextNode(pCurrentNode);
+		while (NULL != pNodeTemp)
+		{
+			NodeType nodeType = pNodeTemp->GetNodeType();
+			if (0 == strcmp(nodeXPath.pszNodeName, rgszNodeType[(int)nodeType]))
+			{
+				// Check the attribute name and value if there is
+				if (nodeXPath.pszAttrName != NULL && nodeXPath.pszAttrValue != NULL)
+				{
+					string strAttrName(nodeXPath.pszAttrName);
+					string strAttrValue = pNodeTemp->FindAttribute(strAttrName);
+					if (0 == strcmp(nodeXPath.pszAttrValue, strAttrValue.c_str()))
+					{
+						break;
+					}
+				}
+				else
+				{
+					break;
+				}
+			}
+			pNodeTemp = GetNextNode(pNodeTemp);
+		}
+		if (NULL == pNodeTemp)
+		{
+			break;
+		}
+
+		pCurrentNode = pNodeTemp;
+		pNodeNameEnd++;
+		pNodeNameStart = pNodeNameEnd;
+	}
+
+	if ('\0' == *pNodeNameEnd && NULL != pNodeTemp)
+	{// Read to the end of the XPath, and the last node has been gotten
+		delete [] szXPath;
+		return pCurrentNode;
+	}
+
+	delete [] szXPath;
+	return NULL;
+}
+
+int GetNodesByXPath(Node* pRootNode, const char* cszXPath, Node** ppNodeList)
+{
+	if (NULL == pRootNode || NULL == ppNodeList || NULL == cszXPath)
+	{
+		//return 0;
+	}
+
+	puts("djfkj");
+	puts(cszXPath);
+
+
+	int iXpathLen = strlen(cszXPath);
+	if (0 == iXpathLen)
+	{
+		return 0;
+	}
+
+	char* szXPath = new char[iXpathLen];
+
+	if (NULL == strcpy(szXPath, cszXPath))
+	{
+		return 0;
+	}
+
+	NodeType te = pRootNode->GetNodeType();
+	char* pNodeNameStart = szXPath + 1;  // Skip the first "
+	char* pNodeNameEnd = pNodeNameStart;
+	szXPath[iXpathLen - 2] = '\0';       // Remove the last "
+	Node* pCurrentNode = pRootNode;
+	puts(pNodeNameStart);
+	while (true)
+	{
+		while (*pNodeNameEnd != '>' && *pNodeNameEnd != '\0')
+		{
+			pNodeNameEnd++;
+		}
+
+		if ('\0' == *pNodeNameEnd)
+		{
+			break;
+		}
+
+		*pNodeNameEnd = '\0';
+
+		NodeXPath nodeXPath = GetNodeXPath(pNodeNameStart);
+
+		// To get the node by current Node name
+		Node* pNodeTemp = GetNextNode(pCurrentNode);
+		while (NULL != pNodeTemp)
+		{
+			NodeType nodeType = pNodeTemp->GetNodeType();
+			if (0 == strcmp(nodeXPath.pszNodeName, rgszNodeType[(int)nodeType]))
+			{
+				break;
+			}
+			pNodeTemp = GetNextNode(pNodeTemp);
+		}
+		if (NULL == pNodeTemp)
+		{
+			break;
+		}
+
+		pCurrentNode = pNodeTemp;
+	}
+
+	delete [] szXPath;
+	return 0;
+}
+
+int main(int argc, char* argv[])
+{
+	test();
+	puts("Runs in new linus env.");
+	return 0;
+}
